@@ -1,0 +1,21 @@
+Package: openfda
+Title: R interface to the OpenFDA API
+Version: 1.7.0.9000
+Authors@R: c(
+    person("Russell", "Power", , "power@iodine.com", role = c("aut", "cre"))
+    )
+Description: Provides a simplified interface to the OpenFDA API from R
+URL: http://github.com/rjpower/openfda
+BugReports: http://github.com/rjpower/openfda/issues
+Depends:
+    R (>= 3.0.2)
+Imports:
+    httr (>= 0.4),
+    memoise,
+    jsonlite,
+    magrittr,
+    ggplot2,
+    plyr
+Suggests:
+    testthat
+License: GPL (>= 2)
