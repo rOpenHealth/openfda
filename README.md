@@ -1,0 +1,74 @@
+# OpenFDA-R
+## Convenient access to the OpenFDA API
+
+This package provides some simple helpers for accessing the OpenFDA API
+from R.  It uses the `jsonlite` and `magrittr` packages to provide a 
+simple way to convert from OpenFDA queries to R dataframes suitable
+for quick analysis and plotting.
+
+## Installation
+
+This library has not yet been added to CRAN, so you'll need the devtools
+package to install it:
+
+```
+install.packages("devtools")
+````
+
+Once devtools is installed, you can grab this package:
+
+```
+library(devtools)
+devtools::install_github("rjpower/openfda-R")
+```
+
+Load it in like any other package:
+
+```
+library(openfda)
+```
+
+## Examples
+
+```
+patient_ages = fda_query("/drug/event.json") %>%
+               fda_count("patient.patientonsetage") %>%
+               fda_exec()
+               
+# patient ages is now a data frame with "term" and "count" columns
+# let's plot it with ggplot2
+library(ggplot2)
+qplot(x=term, y=count, data=patient_ages)
+```
+
+You can filter the results to count on using the fda_filter() method:
+
+```
+paxil_ages = fda_query("/drug/event.json") %>%
+               fda_filter("patient.drug.openfda.generic_name", "paroxetine")
+               fda_count("patient.patientonsetage") %>%
+               fda_exec()
+```
+
+Using this API with your API key is easy: just add
+`fda_api_key("MY_KEY")` to your pipeline.
+
+```
+patient_ages = fda_query("/drug/event.json") %>%
+               fda_api_key("MYKEY") %>%
+               fda_count("patient.patientonsetage") %>%
+               fda_exec()
+```
+
+You can also specify options up front and re-use the query:
+
+```
+age_query = fda_query("/drug/event.json") %>%
+            fda_api_key("MYKEY") %>%
+            fda_count("patient.patientonsetage");
+
+paxil_ages = age_query %>% fda_filter("patient.drug.openfda.generic_name", "paroxetine") %>% fda_exec()
+zoloft_ages = age_query %>% fda_filter("patient.drug.openfda.generic_name", "sertraline") %>% fda_exec()
+```
+
+R documentation for each method is also provided in the package (`?fda_exec`).
