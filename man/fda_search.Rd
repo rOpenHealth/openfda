@@ -4,7 +4,7 @@
 \alias{fda_search}
 \title{Fetch search results.}
 \usage{
-fda_search(q)
+fda_search(q, field = FALSE)
 }
 \value{
 fda_query

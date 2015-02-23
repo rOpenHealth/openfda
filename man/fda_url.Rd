@@ -4,7 +4,7 @@
 \alias{fda_url}
 \title{Return the URL that will be fetched for the current query.}
 \usage{
-fda_url(q, extra_args = c())
+fda_url(q)
 }
 \value{
 character The url that will be fetched

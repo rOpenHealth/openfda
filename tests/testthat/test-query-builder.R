@@ -31,22 +31,34 @@ test_that("api key", {
     fda_url()
   
   expect_that(url, 
-    equals("https://api.fda.gov/drug/event.json?search=patient.patientsex:2&key=BLAH"))
-})
-
-test_that("age counting", {
-  df = fda_query("/drug/event.json") %>%
-             fda_filter("patient.drug.openfda.generic_name", "paroxetine") %>%
-             fda_filter("patient.patientonsetageunit", "801") %>%
-             fda_count("patientonsetage") %>%
-             fda_exec()
+    equals("https://api.fda.gov/drug/event.json?search=patient.patientsex:2&api_key=BLAH"))
 })
 
 context("fetch");
 
+test_that("age counting", {
+  df = fda_query("/drug/event.json") %>%
+    fda_filter("patient.drug.openfda.generic_name", "paroxetine") %>%
+    fda_filter("patient.patientonsetageunit", "801") %>%
+    fda_count("patientonsetage") %>%
+    fda_exec()
+})
+
+test_that("retrieve a field", {
+  df = fda_query("/drug/event.json") %>%
+    fda_filter("patient.drug.openfda.generic_name", "paroxetine") %>%
+    fda_search("patient.drug.drugindication") %>%
+    fda_exec()
+})
+
 test_that("basic fetching works", {
-  df = openfda::fetch_url("http://api.fda.gov/drug/event.json?count=receivedate");
+  df = openfda::fetch_url("http://api.fda.gov/drug/event.json?count=receivedate")$result;
   df$time = as.Date(df$time, "%Y%m%d");
   plot = ggplot(df, aes(x=time, y=count)) + stat_identity();
   expect_that(plot, is_a("gg"));
+});
+
+context("error handling")
+test_that("handle 404s", {
+  df = openfda::fetch_url("http://api.fda.gov/drug/event.json?search=patientsex:99");
 });

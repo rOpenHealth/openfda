@@ -35,34 +35,11 @@ NULL
 #' @export
 NULL
 
-cached_fetch <- memoise(function(url) {
-  return (as.data.frame(fromJSON(url)$results))
-})
-
 #' Make a copy of query (keeps the class).
 copy_query = function(query) {
   query = lapply(query, FUN=identity)
   class(query) = "fda_query"
   query
-}
-
-# Internal query helpers.
-
-#' Executes a count operation for a query
-count <- function(q) {
-  q = copy_query(q)
-  url = fda_url(q, c(paste("count", q$count, sep="=")))
-  
-  # Add the fieldname as a column, in addition to the generic "term"
-  df = fetch_url(url)
-  #df[field] = df$term
-  df
-}
-
-#' Executes a search operation for a query
-search <- function(q) {
-  url = fda_url(q);
-  return(fetch_url(url))
 }
 
 FDA_DEBUG = TRUE
@@ -76,6 +53,8 @@ fda_debug <- function(on) {
   FDA_DEBUG <<- on
 }
 
+fetch_ <- memoize(fromJSON)
+
 #' Fetch the given URL as JSON.
 #' 
 #' This uses jsonlite to fetch the URL.  The result is coerced into
@@ -83,12 +62,21 @@ fda_debug <- function(on) {
 #' 
 #' @return data.frame
 #' @export
-fetch_url <- function(url) {
+fda_fetch <- function(url, catch_errors=TRUE) {
   if (FDA_DEBUG) {
     cat("Fetching:", url, "\n")
   }
   
-  cached_fetch(url)
+  if (catch_errors) {
+    result = try(fetch_(url), silent=catch_errors)
+    if (class(result) == "try-error") {
+      return(data.frame(results=c()))
+    } else {
+      result
+    }
+  } 
+  
+  fromJSON(url)
 }
 
 #' Create a new query.
@@ -110,6 +98,7 @@ fda_query <- function(base) {
   q$base = base
   q$limit = FALSE
   q$key = FALSE
+  q$count = FALSE
   q$filters = vector("character")
   q$operation = function(q) {
     print("No operation defined (try fda_count or fda_search)!")
@@ -167,7 +156,7 @@ fda_api_key <- function(q, key) {
 #'
 #' @return character The url that will be fetched
 #' @export
-fda_url <- function(q, extra_args=c()) {
+fda_url <- function(q) {
   q = copy_query(q)
   search <- paste("search", paste(q$filters, collapse="+AND+"), sep="=")
   
@@ -181,7 +170,10 @@ fda_url <- function(q, extra_args=c()) {
     args = c(args, paste("limit", q$limit, sep="="))
   }
   
-  args = c(args, extra_args)
+  if (q$count != FALSE) {
+    args = c(args, paste("count", q$count, sep="="))
+  }
+  
   args = paste(args, collapse="&", sep="")
   
   url = paste("https://api.fda.gov", q$base, sep="")
@@ -200,16 +192,50 @@ fda_plot <- function(df) {
   qplot(term, count, data=df)
 }
 
+extract_ <- function(obj, path) {
+  if (length(path) == 0) {
+    return(obj)
+  }
+  field = path[1]
+  rest = path[-1]
+  obj = obj[[field]]
+  extract(obj, rest)
+}
+
+#' Fetch a (nested field) from a list or dataframe.
+#' 
+#' @export
+extract_field <- function(obj, path) {
+  path = unlist(strsplit(path, ".", fixed=TRUE))
+  print(path)
+  extract_(obj, path)
+}
+
 #' Fetch search results.
 #' 
 #' When combined with \code{fda_exec}, this query will 
 #' return a data frame consisting of the matching records.
 #' 
+#' @param field The field to extract.  This should be a 
+#'   dot (.) delimited path to follow to extract a field:
+#'   e.g. 'a.b.c.d', would perform the equivalent of 
+#'   running a[[b]][[c]][[d]]
 #' @return fda_query
 #' @export
-fda_search <- function(q) {
+fda_search <- function(q, field=FALSE) {
   q = copy_query(q)
-  q$operation = search
+  q$count = FALSE
+  q$operation = function(q) {
+    url = fda_url(q);
+    result = fda_fetch(url)$result
+    if (field == FALSE) {
+      return(result)
+    } else {
+      return(extract_field(result, field))
+    }
+  }
+  
+  q
 }
 
 
@@ -224,7 +250,14 @@ fda_count <- function(q, field) {
   q = copy_query(q)
   q$limit = FALSE
   q$count = field
-  q$operation = count
+  
+  #' Executes a count operation for a query
+  q$operation <- function(q) {
+    url = fda_url(q)
+    json = fda_fetch(url)
+    json$result
+  }
+  
   q
 }
 
