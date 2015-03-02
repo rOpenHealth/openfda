@@ -42,17 +42,6 @@ copy_query = function(query) {
   query
 }
 
-FDA_DEBUG = TRUE
-
-#' Turn off/on API debugging.
-#' 
-#' When set to TRUE, this will print additional debugging information from
-#' the API, such as URLs being fetched.
-#' @export
-fda_debug <- function(on) {
-  FDA_DEBUG <<- on
-}
-
 fetch_ <- memoize(fromJSON)
 
 #' Fetch the given URL as JSON.
@@ -62,8 +51,8 @@ fetch_ <- memoize(fromJSON)
 #' 
 #' @return data.frame
 #' @export
-fda_fetch <- function(url, catch_errors=TRUE) {
-  if (FDA_DEBUG) {
+fda_fetch <- function(url, catch_errors=TRUE, debug=TRUE) {
+  if (debug == TRUE) {
     cat("Fetching:", url, "\n")
   }
   
@@ -99,6 +88,7 @@ fda_query <- function(base) {
   q$limit = FALSE
   q$key = FALSE
   q$count = FALSE
+  q$debug = TRUE
   q$filters = vector("character")
   q$operation = function(q) {
     print("No operation defined (try fda_count or fda_search)!")
@@ -111,6 +101,13 @@ fda_query <- function(base) {
 #' @export
 print.fda_query <- function(q) {
   print(paste("fda_query(", fda_url(q), ")", sep=""))
+}
+
+#' @export
+fda_debug <- function(q, should_debug) {
+  q = copy_query(q)
+  q$debug = should_debug
+  q
 }
 
 #' Apply a filter to a query
@@ -207,7 +204,6 @@ extract_ <- function(obj, path) {
 #' @export
 extract_field <- function(obj, path) {
   path = unlist(strsplit(path, ".", fixed=TRUE))
-  print(path)
   extract_(obj, path)
 }
 
@@ -227,7 +223,7 @@ fda_search <- function(q, field=FALSE) {
   q$count = FALSE
   q$operation = function(q) {
     url = fda_url(q);
-    result = fda_fetch(url)$result
+    result = fda_fetch(url, debug=q$debug)$result
     if (field == FALSE) {
       return(result)
     } else {
@@ -254,7 +250,7 @@ fda_count <- function(q, field) {
   #' Executes a count operation for a query
   q$operation <- function(q) {
     url = fda_url(q)
-    json = fda_fetch(url)
+    json = fda_fetch(url, debug=q$debug)
     json$result
   }
   
