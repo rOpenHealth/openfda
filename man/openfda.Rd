@@ -14,9 +14,11 @@ building complex queries.
 }
 \examples{
 # Queries generally have the following format
+\dontrun{
 fda_query(endpoint) \%>\%
    fda_filter(field, value) \%>\%
    fda_count(field) OR fda_search() \%>\%
    fda_exec()
+}
 }
 

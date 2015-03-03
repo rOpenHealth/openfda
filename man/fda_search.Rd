@@ -6,6 +6,12 @@
 \usage{
 fda_search(q, field = FALSE)
 }
+\arguments{
+\item{field}{The field to extract.  This should be a
+dot (.) delimited path to follow to extract a field:
+e.g. 'a.b.c.d', would perform the equivalent of
+running a[[b]][[c]][[d]]}
+}
 \value{
 fda_query
 }

@@ -1,9 +1,9 @@
-library(openfda)
-library(ggplot2)
-library(magrittr)
+library("openfda")
+library("ggplot2")
+library("magrittr")
 
 context("query-builder")
-openfda::fda_debug(FALSE)
+#openfda::fda_debug(FALSE)
 
 test_that("build enforcement query", {
   df = fda_query("/drug/enforcement.json") %>%
@@ -52,13 +52,13 @@ test_that("retrieve a field", {
 })
 
 test_that("basic fetching works", {
-  df = openfda::fetch_url("http://api.fda.gov/drug/event.json?count=receivedate")$result;
-  df$time = as.Date(df$time, "%Y%m%d");
-  plot = ggplot(df, aes(x=time, y=count)) + stat_identity();
-  expect_that(plot, is_a("gg"));
+  df = fda_fetch("http://api.fda.gov/drug/event.json?count=receivedate")$result
+  df$time = as.Date(df$time, "%Y%m%d")
+  plot = ggplot(df, aes(x=time, y=count)) + stat_identity()
+  expect_that(plot, is_a("gg"))
 });
 
 context("error handling")
 test_that("handle 404s", {
-  df = openfda::fetch_url("http://api.fda.gov/drug/event.json?search=patientsex:99");
+  df = fda_fetch("http://api.fda.gov/drug/event.json?search=patientsex:99")
 });

@@ -1,6 +1,6 @@
-library(ggplot2)
-library(plyr)
-library(openfda)
+library("ggplot2")
+library("plyr")
+library("openfda")
 
 my_query = fda_query("/drug/event.json")
 
