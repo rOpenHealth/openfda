@@ -4,7 +4,7 @@
 \alias{fda_debug}
 \title{Turn off/on API debugging.}
 \usage{
-fda_debug(on)
+fda_debug(q, should_debug)
 }
 \description{
 When set to TRUE, this will print additional debugging information from

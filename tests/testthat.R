@@ -1,4 +1,3 @@
-library(testthat)
-library(openfda)
+library("testthat")
 
 test_check("openfda")

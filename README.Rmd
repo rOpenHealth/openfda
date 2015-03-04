@@ -24,39 +24,31 @@ devtools::install_github("ropenhealth/openfda")
 
 Load it in like any other package:
 
-
-```r
+```{r}
 library("openfda")
 ```
 
 ## Examples
 
+```{r, echo=FALSE, results='hide'}
+library("knitr")
+opts_knit$set(upload.fun = imgur_upload, base.url = NULL)
+```
 
-
-
-```r
+```{r}
 patient_ages = fda_query("/drug/event.json") %>%
                fda_count("patient.patientonsetage") %>%
                fda_exec()
-```
-
-```
-## Fetching: https://api.fda.gov/drug/event.json?search=&count=patient.patientonsetage
-```
-
-```r
+               
 # patient ages is now a data frame with "term" and "count" columns
 # let's plot it with ggplot2
 library("ggplot2")
 qplot(x=term, y=count, data=patient_ages)
 ```
 
-![plot of chunk unnamed-chunk-3](http://i.imgur.com/peY0jEh.png) 
-
 You can filter the results to count on using the `fda_filter()` method:
 
-
-```r
+```{r, results="hide"}
 paxil_ages = fda_query("/drug/event.json") %>%
                fda_filter("patient.drug.openfda.generic_name", "paroxetine") %>%
                fda_count("patient.patientonsetage") %>%
@@ -66,8 +58,7 @@ paxil_ages = fda_query("/drug/event.json") %>%
 Using this API with your API key is easy: just add
 `fda_api_key("MY_KEY")` to your pipeline.
 
-
-```r
+```{r, results="hide"}
 patient_ages = fda_query("/drug/event.json") %>%
                fda_api_key("MYKEY") %>%
                fda_count("patient.patientonsetage") %>%
@@ -76,8 +67,7 @@ patient_ages = fda_query("/drug/event.json") %>%
 
 You can also specify options up front and re-use the query:
 
-
-```r
+```{r, results="hide"}
 age_query = fda_query("/drug/event.json") %>%
             fda_api_key("MYKEY") %>%
             fda_count("patient.patientonsetage");

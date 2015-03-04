@@ -4,7 +4,7 @@
 \alias{fda_fetch}
 \title{Fetch the given URL as JSON.}
 \usage{
-fda_fetch(url, catch_errors = TRUE)
+fda_fetch(url, catch_errors = TRUE, debug = TRUE)
 }
 \value{
 data.frame

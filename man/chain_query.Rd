@@ -9,6 +9,7 @@ Imported from magrittr, use this to chain together
 operations in a natural way.
 }
 \examples{
+\dontrun{
 # instead of
 a(b(c("hello")), "bob")
 
@@ -21,5 +22,6 @@ c("hello") \\\%>\\\% b() \\\%>\\\% a("bob")
 my_query <-
    fda_query("/drug/event.json") \\\%>\\\%
    fda_api_key("ABC")
+}
 }
 

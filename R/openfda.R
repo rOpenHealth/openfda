@@ -1,8 +1,3 @@
-library(jsonlite)
-library(memoise)
-library(magrittr)
-library(ggplot2)
-
 #' @importFrom jsonlite fromJSON
 #' @importFrom memoise memoise
 #' @importFrom ggplot2 qplot
@@ -15,7 +10,7 @@ NULL
 #' operations in a natural way.
 #' 
 #' @examples
-#' 
+#' \dontrun{
 #' # instead of
 #' a(b(c("hello")), "bob")
 #' 
@@ -28,6 +23,7 @@ NULL
 #' my_query <- 
 #'    fda_query("/drug/event.json") \%>\%
 #'    fda_api_key("ABC") 
+#' }
 #' 
 #' @aliases chain_query
 #' @rdname chain_query
@@ -42,7 +38,7 @@ copy_query = function(query) {
   query
 }
 
-fetch_ <- memoize(fromJSON)
+fetch_ <- memoise(fromJSON)
 
 #' Fetch the given URL as JSON.
 #' 
@@ -99,10 +95,15 @@ fda_query <- function(base) {
 }
 
 #' @export
-print.fda_query <- function(q) {
-  print(paste("fda_query(", fda_url(q), ")", sep=""))
+print.fda_query <- function(x, ...) {
+  print(paste("fda_query(", fda_url(x), ")", sep=""))
 }
 
+#' Turn off/on API debugging.
+#' 
+#' When set to TRUE, this will print additional debugging information from
+#' the API, such as URLs being fetched.
+#' 
 #' @export
 fda_debug <- function(q, should_debug) {
   q = copy_query(q)
@@ -196,7 +197,7 @@ extract_ <- function(obj, path) {
   field = path[1]
   rest = path[-1]
   obj = obj[[field]]
-  extract(obj, rest)
+  extract_(obj, rest)
 }
 
 #' Fetch a (nested field) from a list or dataframe.
@@ -278,10 +279,12 @@ fda_exec <- function(q) {
 #' 
 #' @examples
 #' # Queries generally have the following format
+#' \dontrun{
 #' fda_query(endpoint) %>%
 #'    fda_filter(field, value) %>%
 #'    fda_count(field) OR fda_search() %>%
 #'    fda_exec()
+#' }
 #'
 #' @docType package
 #' @name openfda
