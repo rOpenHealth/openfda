@@ -2,12 +2,13 @@ Package: openfda
 Title: R interface to the OpenFDA API
 Version: 1.7.0.9000
 Authors@R: c(
-    person("Russell", "Power", , "power@iodine.com", role = c("aut", "cre"))
+    person("Russell", "Power", email = "power@iodine.com", role = c("aut", "cre")),
+    person("Thomas J.", "Leeper", email = "thosjleeper@gmail.com", role = "aut")
     )
 Maintainer: Russell Power <power@iodine.com>
 Description: Provides a simplified interface to the OpenFDA API from R.
-URL: http://github.com/rjpower/openfda-R
-BugReports: http://github.com/rjpower/openfda/issues-R
+URL: http://github.com/ropenhealth/openfda
+BugReports: http://github.com/ropenhealth/openfda/issues
 Depends:
     R (>= 3.0.2)
 Imports:

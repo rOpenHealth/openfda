@@ -1,7 +1,7 @@
 # openfda
 ## Convenient access to the OpenFDA API
 
-This package provides some simple helpers for accessing the OpenFDA API
+This package provides some simple helpers for accessing the [OpenFDA](https://open.fda.gov/) API
 from R.  It uses the `jsonlite` and `magrittr` packages to provide a 
 simple way to convert from OpenFDA queries to R dataframes suitable
 for quick analysis and plotting.
@@ -19,7 +19,7 @@ Once devtools is installed, you can grab this package:
 
 ```R
 library("devtools")
-devtools::install_github("rjpower/openfda-R")
+devtools::install_github("ropenhealth/openfda")
 ```
 
 Load it in like any other package:
@@ -51,20 +51,16 @@ library("ggplot2")
 qplot(x=term, y=count, data=patient_ages)
 ```
 
-![plot of chunk unnamed-chunk-3](http://i.imgur.com/7qLI1Pe.png) 
+![plot of chunk unnamed-chunk-3](http://i.imgur.com/peY0jEh.png) 
 
 You can filter the results to count on using the `fda_filter()` method:
 
 
 ```r
 paxil_ages = fda_query("/drug/event.json") %>%
-               fda_filter("patient.drug.openfda.generic_name", "paroxetine")
+               fda_filter("patient.drug.openfda.generic_name", "paroxetine") %>%
                fda_count("patient.patientonsetage") %>%
                fda_exec()
-```
-
-```
-## Error in fda_count("patient.patientonsetage"): argument "field" is missing, with no default
 ```
 
 Using this API with your API key is easy: just add
@@ -78,10 +74,6 @@ patient_ages = fda_query("/drug/event.json") %>%
                fda_exec()
 ```
 
-```
-## Fetching: https://api.fda.gov/drug/event.json?search=&api_key=MYKEY&count=patient.patientonsetage
-```
-
 You can also specify options up front and re-use the query:
 
 
@@ -91,18 +83,7 @@ age_query = fda_query("/drug/event.json") %>%
             fda_count("patient.patientonsetage");
 
 paxil_ages = age_query %>% fda_filter("patient.drug.openfda.generic_name", "paroxetine") %>% fda_exec()
-```
-
-```
-## Fetching: https://api.fda.gov/drug/event.json?search=patient.drug.openfda.generic_name:paroxetine&api_key=MYKEY&count=patient.patientonsetage
-```
-
-```r
 zoloft_ages = age_query %>% fda_filter("patient.drug.openfda.generic_name", "sertraline") %>% fda_exec()
-```
-
-```
-## Fetching: https://api.fda.gov/drug/event.json?search=patient.drug.openfda.generic_name:sertraline&api_key=MYKEY&count=patient.patientonsetage
 ```
 
 R documentation for each method is also provided in the package (`? fda_exec`).

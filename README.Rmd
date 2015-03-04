@@ -1,7 +1,7 @@
 # openfda
 ## Convenient access to the OpenFDA API
 
-This package provides some simple helpers for accessing the OpenFDA API
+This package provides some simple helpers for accessing the [OpenFDA](https://open.fda.gov/) API
 from R.  It uses the `jsonlite` and `magrittr` packages to provide a 
 simple way to convert from OpenFDA queries to R dataframes suitable
 for quick analysis and plotting.
@@ -19,7 +19,7 @@ Once devtools is installed, you can grab this package:
 
 ```R
 library("devtools")
-devtools::install_github("rjpower/openfda-R")
+devtools::install_github("ropenhealth/openfda")
 ```
 
 Load it in like any other package:
@@ -48,9 +48,9 @@ qplot(x=term, y=count, data=patient_ages)
 
 You can filter the results to count on using the `fda_filter()` method:
 
-```{r}
+```{r, results="hide"}
 paxil_ages = fda_query("/drug/event.json") %>%
-               fda_filter("patient.drug.openfda.generic_name", "paroxetine")
+               fda_filter("patient.drug.openfda.generic_name", "paroxetine") %>%
                fda_count("patient.patientonsetage") %>%
                fda_exec()
 ```
@@ -58,7 +58,7 @@ paxil_ages = fda_query("/drug/event.json") %>%
 Using this API with your API key is easy: just add
 `fda_api_key("MY_KEY")` to your pipeline.
 
-```{r}
+```{r, results="hide"}
 patient_ages = fda_query("/drug/event.json") %>%
                fda_api_key("MYKEY") %>%
                fda_count("patient.patientonsetage") %>%
@@ -67,7 +67,7 @@ patient_ages = fda_query("/drug/event.json") %>%
 
 You can also specify options up front and re-use the query:
 
-```{r}
+```{r, results="hide"}
 age_query = fda_query("/drug/event.json") %>%
             fda_api_key("MYKEY") %>%
             fda_count("patient.patientonsetage");
