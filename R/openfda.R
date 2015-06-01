@@ -52,16 +52,17 @@ fda_fetch <- function(url, catch_errors=TRUE, debug=TRUE) {
     cat("Fetching:", url, "\n")
   }
   
-  if (catch_errors) {
-    result = try(fetch_(url), silent=catch_errors)
-    if (class(result) == "try-error") {
-      return(data.frame(results=c()))
-    } else {
-      result
-    }
-  } 
+  result = httr::GET(url)
+  # The API servers return 404 for empty search results, so
+  # distinguish that case from 'real' errors.
+  if (result$status_code == 404) {
+    warning('Received 404 response from FDA servers.\n',
+            'Interpreting as an empty result set.')
+    return(data.frame(results=c()));
+  }
   
-  fromJSON(url)
+  httr::stop_for_status(result)
+  fromJSON(httr::content(result, as='text'))
 }
 
 #' Create a new query.
