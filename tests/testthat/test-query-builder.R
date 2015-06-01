@@ -30,8 +30,8 @@ test_that("api key", {
     fda_filter("patient.patientsex", "2") %>%
     fda_url()
   
-  expect_that(url, 
-    equals("https://api.fda.gov/drug/event.json?search=patient.patientsex:2&api_key=BLAH"))
+  expect_equal(url,
+    "https://api.fda.gov/drug/event.json?search=patient.patientsex:2&api_key=BLAH")
 })
 
 context("fetch");

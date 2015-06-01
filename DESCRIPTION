@@ -15,7 +15,8 @@ Imports:
     memoise,
     jsonlite,
     magrittr,
-    ggplot2
+    ggplot2,
+    httr
 Suggests:
     testthat,
     plyr
