@@ -84,7 +84,7 @@ fda_query <- function(base) {
   q$base = base
   q$limit = FALSE
   q$skip = FALSE
-  q$key = FALSE
+  q$key = Sys.getenv("OPENFDA_API_KEY", NA)
   q$count = FALSE
   q$debug = TRUE
   q$filters = vector("character")
@@ -159,7 +159,7 @@ fda_skip <- function(q, skip) {
 #'
 #' @return fda_query
 #' @export
-fda_api_key <- function(q, key) {
+fda_api_key <- function(q, key = Sys.getenv("OPENFDA_API_KEY", NA)) {
   q = copy_query(q)
   q$key = key
   q
@@ -175,7 +175,7 @@ fda_url <- function(q) {
 
   args = c(search);
 
-  if (q$key != FALSE) {
+  if (!is.na(q$key)) {
     args = c(args, paste("api_key", q$key, sep="="))
   }
 
